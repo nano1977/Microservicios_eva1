@@ -16,4 +16,6 @@ public class Vehiculo {
     private String patente;
     private String modelo;
     private String chofer;
+    private Double capacidadCarga; // En kilos o toneladas
+    private String estado; // "Disponible", "En Ruta", "Mantenimiento"
 }
