@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Logistica.demo.model.CentroAcopio;
+import com.Logistica.demo.model.Inventario;
 import com.Logistica.demo.model.Vehiculo;
+import com.Logistica.demo.repository.CentroAcopioRepository;
+import com.Logistica.demo.repository.InventarioRepository;
 import com.Logistica.demo.repository.VehiculoRepository;
 
 @RestController
@@ -21,6 +25,12 @@ public class LogisticaController {
 
     @Autowired
     private VehiculoRepository vehiculoRepository;
+
+    @Autowired
+private CentroAcopioRepository centroAcopioRepository;
+
+@Autowired
+private InventarioRepository inventarioRepository;
 
     // LEER TODOS (Read)
     @GetMapping("/vehiculos")
@@ -46,10 +56,20 @@ public class LogisticaController {
                 return vehiculoRepository.save(v);
             }).orElseThrow();
     }
+    @GetMapping("/centros")
+public List<CentroAcopio> listarCentros() {
+    return centroAcopioRepository.findAll();
+}
+
+@GetMapping("/inventario")
+public List<Inventario> listarInventario() {
+    return inventarioRepository.findAll();
+}
 
     // ELIMINAR (Delete)
     @DeleteMapping("/vehiculos/{id}")
     public void eliminar(@PathVariable Long id) {
         vehiculoRepository.deleteById(id);
+        
     }
 }

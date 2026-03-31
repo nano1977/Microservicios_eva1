@@ -1,0 +1,19 @@
+package com.Logistica.demo.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
+
+@Entity
+@Data
+public class CentroAcopio {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nombre;
+    private String ubicacion;
+    private String capacidadMaxima; // Ejemplo: "10 toneladas" o "500 cajas"
+}
