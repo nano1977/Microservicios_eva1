@@ -15,5 +15,6 @@ public class CentroAcopio {
     
     private String nombre;
     private String ubicacion;
-    private String capacidadMaxima; // Ejemplo: "10 toneladas" o "500 cajas"
+    private String contacto;
+    private String capacidadMaxima;
 }

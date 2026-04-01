@@ -19,15 +19,18 @@ import com.Logistica.demo.repository.CentroAcopioRepository;
 import com.Logistica.demo.repository.InventarioRepository;
 import com.Logistica.demo.repository.VehiculoRepository;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/logistica")
+@Tag(name = "Logística", description = "API para gestión de vehículos, centros de acopio e inventario")
 public class LogisticaController {
 
     @Autowired
     private VehiculoRepository vehiculoRepository;
 
     @Autowired
-private CentroAcopioRepository centroAcopioRepository;
+    private CentroAcopioRepository centroAcopioRepository;
 
 @Autowired
 private InventarioRepository inventarioRepository;
@@ -56,20 +59,32 @@ private InventarioRepository inventarioRepository;
                 return vehiculoRepository.save(v);
             }).orElseThrow();
     }
+    
     @GetMapping("/centros")
-public List<CentroAcopio> listarCentros() {
-    return centroAcopioRepository.findAll();
-}
+    public List<CentroAcopio> listarCentros() {
+        return centroAcopioRepository.findAll();
+    }
 
-@GetMapping("/inventario")
-public List<Inventario> listarInventario() {
-    return inventarioRepository.findAll();
-}
+    @GetMapping("/inventario")
+    public List<Inventario> listarInventario() {
+        return inventarioRepository.findAll();
+    }
+    
+    // --- MÉTODOS PARA CENTROS DE ACOPIO ---
+    @PostMapping("/centros")
+    public CentroAcopio crearCentro(@RequestBody CentroAcopio centro) {
+        return centroAcopioRepository.save(centro);
+    }
+
+    // --- MÉTODOS PARA INVENTARIO ---
+    @PostMapping("/inventario")
+    public Inventario crearInventario(@RequestBody Inventario item) {
+        return inventarioRepository.save(item);
+    }
 
     // ELIMINAR (Delete)
     @DeleteMapping("/vehiculos/{id}")
     public void eliminar(@PathVariable Long id) {
         vehiculoRepository.deleteById(id);
-        
     }
 }
