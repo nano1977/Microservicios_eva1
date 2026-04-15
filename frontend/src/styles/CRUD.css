@@ -1,0 +1,118 @@
+/* Estilos CRUD */
+.crud-container {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+.crud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 15px;
+}
+
+.crud-header h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.6rem;
+}
+
+.record-count {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.form-card {
+  background-color: #f9fafb;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.form-card h3 {
+  margin-top: 0;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.audit-table {
+  font-size: 0.9rem;
+}
+
+.audit-row {
+  background-color: #fafafa;
+}
+
+.audit-row:hover {
+  background-color: #f0f0f0;
+}
+
+.audit-info {
+  background-color: #f0f9ff;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 6px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.audit-info h3 {
+  margin-top: 0;
+  color: var(--text-color);
+}
+
+.audit-info ul {
+  list-style-position: inside;
+  color: #374151;
+}
+
+.audit-info li {
+  margin: 8px 0;
+}
+
+.no-results {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .crud-container {
+    padding: 15px;
+  }
+
+  .crud-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .crud-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    font-size: 0.9rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+  }
+}

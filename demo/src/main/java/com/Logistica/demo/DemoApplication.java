@@ -22,6 +22,7 @@ public class DemoApplication {
 	@Bean
 	public CommandLineRunner initDatabase(VehiculoRepository vehiculoRepo, CentroAcopioRepository centroRepo, InventarioRepository inventarioRepo) {
 		return args -> {
+			// ===== CREAR VEHÍCULOS DE PRUEBA =====
 			Vehiculo v1 = new Vehiculo();
 			v1.setPatente("HELP-01");
 			v1.setModelo("Camión Frigorífico");

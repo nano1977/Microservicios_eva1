@@ -1,4 +1,4 @@
-# 📐 Análisis de Patrones de Diseño - Microservicio Donaton
+# 📐 Análisis de Patrones de Diseño - Gestión de Logística
 ## Proyecto: Gestión de Logística y Distribución
 
 **Fecha**: 13 de abril de 2026  
@@ -18,7 +18,7 @@
 
 ## 🎯 Caso de Uso
 
-**Contexto**: Plataforma DONATON - Microservicio de Logística y Distribución para gestión de transporte y distribución de alimentos donados.
+**Contexto**: Plataforma de Gestión de Logística y Distribución para gestión de transporte y distribución de recursos.
 
 **Problema Principal**: 
 - Gestionar múltiples entidades interrelacionadas (Vehículos, Centros de Acopio, Inventario)
