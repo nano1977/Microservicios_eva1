@@ -88,6 +88,19 @@ export default function Inventario() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Eliminar este item de inventario?')) {
+      try {
+        await logisticaService.eliminarInventario(id);
+        setSuccess('✅ Inventario eliminado');
+        loadInventario();
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (err) {
+        setError('Error eliminando inventario');
+      }
+    }
+  };
+
   return (
     <div className="crud-container">
       <div className="crud-header">
@@ -296,6 +309,7 @@ export default function Inventario() {
                 <th>Cantidad</th>
                 <th>Unidad</th>
                 <th>Centro</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -308,6 +322,14 @@ export default function Inventario() {
                   <td>{inv.cantidad}</td>
                   <td>{inv.unidadMedida}</td>
                   <td>{inv.centroAcopio?.nombre || inv.centroAcopio?.id || 'Sin centro'}</td>
+                  <td>
+                    <button
+                      onClick={() => handleDelete(inv.id)}
+                      className="btn-small btn-delete"
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
