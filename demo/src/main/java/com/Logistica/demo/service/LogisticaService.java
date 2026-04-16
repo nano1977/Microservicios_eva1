@@ -288,7 +288,30 @@ public class LogisticaService {
         inventarioRepository.deleteById(id);
     }
 
-    // ==================== MÉTODOS AUXILIARES ====================
+    /**
+     * Obtiene items de inventario con stock bajo (cantidad < 10)
+     * Implementa RF-3.4 del IEEE 830: Generar alertas de stock bajo
+     * @return lista de inventarios con cantidad < 10
+     */
+    public List<Inventario> obtenerInventarioStockBajo() {
+        return inventarioRepository.findAll().stream()
+            .filter(inv -> inv.getCantidad() < 10)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Verifica si existe stock bajo en un centro específico
+     * @param centroPorId el identificador del centro
+     * @return true si hay items con stock bajo
+     */
+    public boolean existeStockBajoEnCentro(Long centroPorId) {
+        return inventarioRepository.findAll().stream()
+            .anyMatch(inv -> inv.getCentroAcopio() != null 
+                && inv.getCentroAcopio().getId().equals(centroPorId)
+                && inv.getCantidad() < 10);
+    }
+
+    // ==================== MÉTODOS AUXILIARES ===================="
 
     /**
      * Valida si una transición de estado es válida

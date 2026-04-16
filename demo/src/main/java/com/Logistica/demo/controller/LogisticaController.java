@@ -177,6 +177,12 @@ public class LogisticaController {
         return ResponseEntity.ok(logisticaService.listarInventario());
     }
 
+    @GetMapping("/inventario/alertas/stock-bajo")
+    @Operation(summary = "Obtiene items de inventario con stock bajo (cantidad < 10) - IEEE 830 RF-3.4")
+    public ResponseEntity<List<Inventario>> obtenerStockBajo() {
+        return ResponseEntity.ok(logisticaService.obtenerInventarioStockBajo());
+    }
+
     @GetMapping("/inventario/{id}")
     @Operation(summary = "Obtiene un item de inventario por ID")
     public ResponseEntity<Inventario> obtenerInventario(@PathVariable Long id) {
