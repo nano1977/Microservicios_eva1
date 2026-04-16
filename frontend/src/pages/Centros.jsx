@@ -10,8 +10,8 @@ export default function Centros() {
   const [formData, setFormData] = useState({
     nombre: '',
     ubicacion: '',
-    emailResponsable: '',
-    telefono: '',
+    contacto: '',
+    capacidadMaxima: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -42,13 +42,13 @@ export default function Centros() {
         await logisticaService.crearCentro(formData);
         setSuccess('✅ Centro creado');
       }
-      setFormData({ nombre: '', ubicacion: '', emailResponsable: '', telefono: '' });
+      setFormData({ nombre: '', ubicacion: '', contacto: '', capacidadMaxima: '' });
       setShowForm(false);
       setEditingId(null);
       loadCentros();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error guardando centro');
+      setError(err.response?.data?.mensaje || err.response?.data?.message || 'Error guardando centro');
     }
   };
 
@@ -78,7 +78,7 @@ export default function Centros() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ nombre: '', ubicacion: '', emailResponsable: '', telefono: '' });
+            setFormData({ nombre: '', ubicacion: '', contacto: '', capacidadMaxima: '' });
           }}
           className="btn-primary"
         >
@@ -115,23 +115,23 @@ export default function Centros() {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Email Responsable *</label>
+              <label>Numero de contacto *</label>
               <input
-                type="email"
-                value={formData.emailResponsable}
+                type="text"
+                value={formData.contacto}
                 onChange={(e) =>
-                  setFormData({ ...formData, emailResponsable: e.target.value })
+                  setFormData({ ...formData, contacto: e.target.value })
                 }
                 required
               />
             </div>
             <div className="form-group">
-              <label>Teléfono *</label>
+              <label>Capacidad Máxima *</label>
               <input
-                type="tel"
-                value={formData.telefono}
+                type="text"
+                value={formData.capacidadMaxima}
                 onChange={(e) =>
-                  setFormData({ ...formData, telefono: e.target.value })
+                  setFormData({ ...formData, capacidadMaxima: e.target.value })
                 }
                 required
               />
@@ -154,8 +154,8 @@ export default function Centros() {
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Ubicación</th>
-                <th>Email</th>
-                <th>Teléfono</th>
+                <th>Contacto</th>
+                <th>Capacidad</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -167,8 +167,8 @@ export default function Centros() {
                     <strong>{c.nombre}</strong>
                   </td>
                   <td>{c.ubicacion}</td>
-                  <td>{c.emailResponsable}</td>
-                  <td>{c.telefono}</td>
+                  <td>{c.contacto}</td>
+                  <td>{c.capacidadMaxima}</td>
                   <td>
                     <button
                       onClick={() => handleEdit(c)}

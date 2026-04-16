@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
 import { logisticaService } from '../services/logisticaService';
 import '../styles/Dashboard.css';
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [stats, setStats] = useState({
     vehiculos: 0,
     centros: 0,
@@ -37,20 +34,12 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await authService.logout();
-    navigate('/login');
-  };
-
   return (
     <div className="dashboard-container">
       <header className="navbar">
         <div className="navbar-brand">
-          <h1>🚚 Microservicio de Donaciones</h1>
+          <h1>🚚 Microservicio de Logística</h1>
         </div>
-        <button onClick={handleLogout} className="btn-logout">
-          Cerrar Sesión
-        </button>
       </header>
 
       <nav className="sidebar">
@@ -123,12 +112,10 @@ export default function Dashboard() {
         <section className="info-section">
           <h3>ℹ️ Características del Sistema</h3>
           <ul className="features-list">
-            <li>✅ Autenticación de 2 factores (Email + SMS)</li>
             <li>✅ Gestión de vehículos con validaciones</li>
             <li>✅ Administración de centros de acopio</li>
             <li>✅ Control de inventario</li>
-            <li>✅ Auditoría completa con tickets únicos</li>
-            <li>✅ Notificaciones automáticas</li>
+            <li>✅ Auditoría completa de acciones</li>
             <li>✅ Patrón Strategy (21 validaciones)</li>
             <li>✅ Patrón Factory (creación segura de objetos)</li>
           </ul>

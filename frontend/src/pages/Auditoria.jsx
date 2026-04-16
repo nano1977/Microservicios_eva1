@@ -25,15 +25,17 @@ export default function Auditoria() {
 
   const registrosFiltrados = registros.filter((r) =>
     filtro === '' ||
-    r.ticket?.includes(filtro) ||
-    r.donante?.toLowerCase().includes(filtro.toLowerCase()) ||
-    r.receptor?.toLowerCase().includes(filtro.toLowerCase())
+    r.numeroTicket?.includes(filtro) ||
+    r.nombreDonante?.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.nombreReceptor?.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.usuario?.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.tipoRecurso?.toLowerCase().includes(filtro.toLowerCase())
   );
 
   return (
     <div className="crud-container">
       <div className="crud-header">
-        <h2>📋 Auditoría - Registro de Donaciones</h2>
+        <h2>📋 Auditoría - Registro de Acciones</h2>
         {registros.length > 0 && (
           <p className="record-count">
             Total: {registros.length} registros inmutables
@@ -46,7 +48,7 @@ export default function Auditoria() {
       <div className="form-group" style={{ marginBottom: '20px' }}>
         <input
           type="text"
-          placeholder="🔍 Buscar por ticket, donante o receptor..."
+          placeholder="🔍 Buscar por ticket, usuario, recurso..."
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
           className="search-input"
@@ -63,12 +65,14 @@ export default function Auditoria() {
             <thead>
               <tr>
                 <th>🎫 Ticket</th>
-                <th>👤 Donante</th>
-                <th>📧 Email</th>
-                <th>📦 Receptor</th>
-                <th>📊 Recurso</th>
-                <th>⚖️ Cantidad</th>
-                <th>🚗 Vehículo</th>
+                <th>👤 Usuario</th>
+                <th>👥 Rol</th>
+                <th>📦 Recurso</th>
+                <th>🔎 ID Recurso</th>
+                <th>⚙️ Acción</th>
+                <th>🏷️ Donante</th>
+                <th>🏷️ Receptor</th>
+                <th>📍 Centro</th>
                 <th>📅 Fecha/Hora</th>
               </tr>
             </thead>
@@ -76,18 +80,20 @@ export default function Auditoria() {
               {registrosFiltrados.map((r) => (
                 <tr key={r.id} className="audit-row">
                   <td>
-                    <code className="ticket-code">{r.ticket}</code>
+                    <code className="ticket-code">{r.numeroTicket}</code>
                   </td>
                   <td>
-                    <strong>{r.donante}</strong>
+                    <strong>{r.usuario}</strong>
                   </td>
-                  <td>{r.email}</td>
-                  <td>{r.receptor}</td>
-                  <td>{r.recurso}</td>
-                  <td>{r.cantidad}</td>
-                  <td>{r.vehiculo}</td>
+                  <td>{r.rol}</td>
+                  <td>{r.tipoRecurso}</td>
+                  <td>{r.idRecurso}</td>
+                  <td>{r.accion}</td>
+                  <td>{r.nombreDonante}</td>
+                  <td>{r.nombreReceptor}</td>
+                  <td>{r.centroDonacion}</td>
                   <td>
-                    {new Date(r.fechaHora).toLocaleString('es-CL')}
+                    {r.timestamp ? new Date(r.timestamp).toLocaleString('es-CL') : ''}
                   </td>
                 </tr>
               ))}
@@ -104,11 +110,9 @@ export default function Auditoria() {
         <h3>🔒 Información de Auditoría</h3>
         <ul>
           <li>✅ Todos los registros son <strong>inmutables</strong> (no se pueden modificar)</li>
-          <li>✅ Cada donación genera un <strong>ticket único</strong> formato DON-YYYYMMDD-XXXXX</li>
-          <li>✅ Trazabilidad 100% del donante al receptor final</li>
-          <li>✅ Registros de vehículos asignados automáticamente</li>
+          <li>✅ Cada acción genera trazabilidad completa de quién hizo qué y cuándo</li>
+          <li>✅ Registros de cambios con detalles antes/después cuando aplica</li>
           <li>✅ Timestamps precisos para cada operación</li>
-          <li>✅ Integración con notificaciones por email/SMS</li>
         </ul>
       </div>
     </div>

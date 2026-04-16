@@ -208,8 +208,8 @@ export default function Vehiculos() {
                   <td>{v.chofer}</td>
                   <td>{v.capacidadCarga}</td>
                   <td>
-                    <span className={`status ${v.estado.toLowerCase()}`}>
-                      {v.estado}
+                    <span className={`status ${(v.estado || "").toLowerCase()}`}>
+                      {v.estado || "Sin estado"}
                     </span>
                   </td>
                   <td>

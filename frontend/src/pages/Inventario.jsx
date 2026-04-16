@@ -4,20 +4,33 @@ import '../styles/CRUD.css';
 
 export default function Inventario() {
   const [inventarios, setInventarios] = useState([]);
+  const [centros, setCentros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
-    tipo: 'Alimento',
+    recurso: 'Alimento',
     cantidad: '',
-    peso: '',
+    unidadMedida: 'Unidades',
+    centroAcopioId: '',
+    condicion: 'Nueva',
+    publico: 'Adulto',
+    tallaNino: 'RN',
+    tipoAdulto: 'Pantalon',
+    tallaAdulto: 'M',
+    tipoAlimento: 'Perecible',
+    descripcionAlimento: '',
     fechaVencimiento: '',
-    centrDestino: '',
   });
+
+  const tallasNino = ['RN', '2', '4', '6', '8', '10', '12'];
+  const tiposAdulto = ['Pantalon', 'Chaleca', 'Poleron', 'Jean', 'Buzo'];
+  const tallasAdulto = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   useEffect(() => {
     loadInventario();
+    loadCentros();
   }, []);
 
   const loadInventario = async () => {
@@ -31,17 +44,47 @@ export default function Inventario() {
     }
   };
 
+  const loadCentros = async () => {
+    try {
+      const response = await logisticaService.getCentros();
+      setCentros(response.data);
+    } catch (err) {
+      setError('Error cargando centros');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await logisticaService.crearInventario(formData);
+      const payload = {
+        recurso: formData.recurso,
+        cantidad: Number(formData.cantidad),
+        unidadMedida: formData.unidadMedida,
+        centroAcopio: {
+          id: Number(formData.centroAcopioId),
+        },
+      };
+      await logisticaService.crearInventario(payload);
       setSuccess('✅ Inventario creado');
-      setFormData({ tipo: 'Alimento', cantidad: '', peso: '', fechaVencimiento: '', centrDestino: '' });
+      setFormData({
+        recurso: 'Alimento',
+        cantidad: '',
+        unidadMedida: 'Unidades',
+        centroAcopioId: '',
+        condicion: 'Nueva',
+        publico: 'Adulto',
+        tallaNino: 'RN',
+        tipoAdulto: 'Pantalon',
+        tallaAdulto: 'M',
+        tipoAlimento: 'Perecible',
+        descripcionAlimento: '',
+        fechaVencimiento: '',
+      });
       setShowForm(false);
       loadInventario();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error guardando inventario');
+      setError(err.response?.data?.mensaje || err.response?.data?.message || 'Error guardando inventario');
     }
   };
 
@@ -68,12 +111,12 @@ export default function Inventario() {
             <div className="form-group">
               <label>Tipo de Recurso *</label>
               <select
-                value={formData.tipo}
-                onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                value={formData.recurso}
+                onChange={(e) => setFormData({ ...formData, recurso: e.target.value })}
               >
                 <option>Alimento</option>
                 <option>Ropa</option>
-                <option>Medicina</option>
+                <option>Insumos Médicos</option>
               </select>
             </div>
             <div className="form-group">
@@ -89,38 +132,150 @@ export default function Inventario() {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Peso (kg) *</label>
-              <input
-                type="number"
-                value={formData.peso}
-                onChange={(e) => setFormData({ ...formData, peso: e.target.value })}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Fecha Vencimiento *</label>
-              <input
-                type="date"
-                value={formData.fechaVencimiento}
+              <label>Unidad de Medida *</label>
+              <select
+                value={formData.unidadMedida}
                 onChange={(e) =>
-                  setFormData({ ...formData, fechaVencimiento: e.target.value })
+                  setFormData({ ...formData, unidadMedida: e.target.value })
                 }
-                required
-              />
+              >
+                <option>Unidades</option>
+                <option>Kilos</option>
+                <option>Cajas</option>
+                <option>Paquetes</option>
+              </select>
             </div>
           </div>
 
+          {formData.recurso === 'Alimento' && (
+            <>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Tipo de Alimento *</label>
+                  <select
+                    value={formData.tipoAlimento}
+                    onChange={(e) => setFormData({ ...formData, tipoAlimento: e.target.value })}
+                  >
+                    <option>Perecible</option>
+                    <option>No perecible</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Descripcion *</label>
+                  <input
+                    type="text"
+                    value={formData.descripcionAlimento}
+                    onChange={(e) =>
+                      setFormData({ ...formData, descripcionAlimento: e.target.value })
+                    }
+                    placeholder="Ej: arroz, latas de conserva"
+                    required
+                  />
+                </div>
+              </div>
+
+              {formData.tipoAlimento === 'Perecible' && (
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Fecha de Vencimiento *</label>
+                    <input
+                      type="date"
+                      value={formData.fechaVencimiento}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fechaVencimiento: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {formData.recurso === 'Ropa' && (
+            <>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Condicion *</label>
+                  <select
+                    value={formData.condicion}
+                    onChange={(e) => setFormData({ ...formData, condicion: e.target.value })}
+                  >
+                    <option>Nueva</option>
+                    <option>Usada</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Publico *</label>
+                  <select
+                    value={formData.publico}
+                    onChange={(e) => setFormData({ ...formData, publico: e.target.value })}
+                  >
+                    <option>Adulto</option>
+                    <option>Nino</option>
+                  </select>
+                </div>
+              </div>
+
+              {formData.publico === 'Nino' ? (
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Talla Nino *</label>
+                    <select
+                      value={formData.tallaNino}
+                      onChange={(e) => setFormData({ ...formData, tallaNino: e.target.value })}
+                    >
+                      {tallasNino.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Tipo *</label>
+                    <select
+                      value={formData.tipoAdulto}
+                      onChange={(e) => setFormData({ ...formData, tipoAdulto: e.target.value })}
+                    >
+                      {tiposAdulto.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Talla *</label>
+                    <select
+                      value={formData.tallaAdulto}
+                      onChange={(e) => setFormData({ ...formData, tallaAdulto: e.target.value })}
+                    >
+                      {tallasAdulto.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
           <div className="form-group">
             <label>Centro Destino *</label>
-            <input
-              type="text"
-              value={formData.centrDestino}
+            <select
+              value={formData.centroAcopioId}
               onChange={(e) =>
-                setFormData({ ...formData, centrDestino: e.target.value })
+                setFormData({ ...formData, centroAcopioId: e.target.value })
               }
-              placeholder="ID o nombre del centro"
               required
-            />
+            >
+              <option value="">Selecciona un centro</option>
+              {centros.map((centro) => (
+                <option key={centro.id} value={centro.id}>
+                  {centro.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
           <button type="submit" className="btn-primary">
@@ -139,8 +294,7 @@ export default function Inventario() {
                 <th>ID</th>
                 <th>Tipo</th>
                 <th>Cantidad</th>
-                <th>Peso (kg)</th>
-                <th>Vencimiento</th>
+                <th>Unidad</th>
                 <th>Centro</th>
               </tr>
             </thead>
@@ -149,12 +303,11 @@ export default function Inventario() {
                 <tr key={inv.id}>
                   <td>{inv.id}</td>
                   <td>
-                    <strong>{inv.tipo}</strong>
+                    <strong>{inv.recurso}</strong>
                   </td>
                   <td>{inv.cantidad}</td>
-                  <td>{inv.peso}</td>
-                  <td>{new Date(inv.fechaVencimiento).toLocaleDateString()}</td>
-                  <td>{inv.centrDestino}</td>
+                  <td>{inv.unidadMedida}</td>
+                  <td>{inv.centroAcopio?.nombre || inv.centroAcopio?.id || 'Sin centro'}</td>
                 </tr>
               ))}
             </tbody>
