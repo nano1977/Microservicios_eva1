@@ -1,0 +1,23 @@
+# Java / Maven
+**/target/
+**/*.class
+**/*.log
+
+# Frontend dependencies and builds
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary docs extraction
+.tmp_docx/
+
+# Local env files
+.env
+.env.*
