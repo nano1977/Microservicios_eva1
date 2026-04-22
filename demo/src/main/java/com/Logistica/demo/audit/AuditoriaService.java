@@ -1,11 +1,13 @@
 package com.Logistica.demo.audit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Servicio que gestiona la auditoría de todas las acciones en la aplicación
@@ -75,6 +77,13 @@ public class AuditoriaService {
             .build();
 
         return auditoriaRepository.save(registro);
+    }
+
+    /**
+     * Obtiene todos los registros de auditoria ordenados por fecha desc.
+     */
+    public List<RegistroAuditoria> obtenerTodos() {
+        return auditoriaRepository.findAll(Sort.by(Sort.Direction.DESC, "timestamp"));
     }
 
     /**

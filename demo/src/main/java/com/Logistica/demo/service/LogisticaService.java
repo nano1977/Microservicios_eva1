@@ -3,18 +3,21 @@ package com.Logistica.demo.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.Logistica.demo.audit.AuditoriaService;
+import com.Logistica.demo.factory.CentroAcopioFactory;
+import com.Logistica.demo.factory.InventarioFactory;
+import com.Logistica.demo.factory.VehiculoFactory;
 import com.Logistica.demo.model.CentroAcopio;
 import com.Logistica.demo.model.Inventario;
 import com.Logistica.demo.model.Vehiculo;
 import com.Logistica.demo.repository.CentroAcopioRepository;
 import com.Logistica.demo.repository.InventarioRepository;
 import com.Logistica.demo.repository.VehiculoRepository;
-import com.Logistica.demo.factory.VehiculoFactory;
-import com.Logistica.demo.factory.CentroAcopioFactory;
-import com.Logistica.demo.factory.InventarioFactory;
 
 /**
  * Capa de Servicio que encapsula la lógica de negocio de Logística
@@ -44,6 +47,9 @@ public class LogisticaService {
     @Autowired
     private InventarioRepository inventarioRepository;
 
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     // ==================== OPERACIONES VEHÍCULOS ====================
 
     /**
@@ -52,7 +58,9 @@ public class LogisticaService {
      * @return el vehículo creado
      */
     public Vehiculo crearVehiculo(Vehiculo vehiculo) {
-        return vehiculoFactory.crear(vehiculo);
+        Vehiculo creado = vehiculoFactory.crear(vehiculo);
+        registrarAuditoriaSafe("CREAR", "Vehiculo", creado.getId(), describirVehiculo(creado));
+        return creado;
     }
 
     /**
@@ -62,7 +70,9 @@ public class LogisticaService {
      * @return el vehículo actualizado
      */
     public Vehiculo actualizarVehiculo(Long id, Vehiculo detalles) {
-        return vehiculoFactory.actualizar(id, detalles);
+        Vehiculo actualizado = vehiculoFactory.actualizar(id, detalles);
+        registrarAuditoriaSafe("ACTUALIZAR", "Vehiculo", actualizado.getId(), describirVehiculo(actualizado));
+        return actualizado;
     }
 
     /**
@@ -133,7 +143,10 @@ public class LogisticaService {
      * @param id el identificador del vehículo
      */
     public void eliminarVehiculo(Long id) {
-        vehiculoRepository.deleteById(id);
+        vehiculoRepository.findById(id).ifPresent(vehiculo -> {
+            vehiculoRepository.delete(vehiculo);
+            registrarAuditoriaSafe("ELIMINAR", "Vehiculo", id, describirVehiculo(vehiculo));
+        });
     }
 
     // ==================== OPERACIONES CENTROS DE ACOPIO ====================
@@ -144,7 +157,9 @@ public class LogisticaService {
      * @return el centro creado
      */
     public CentroAcopio crearCentro(CentroAcopio centro) {
-        return centroAcopioFactory.crear(centro);
+        CentroAcopio creado = centroAcopioFactory.crear(centro);
+        registrarAuditoriaSafe("CREAR", "CentroAcopio", creado.getId(), describirCentro(creado));
+        return creado;
     }
 
     /**
@@ -154,7 +169,9 @@ public class LogisticaService {
      * @return el centro actualizado
      */
     public CentroAcopio actualizarCentro(Long id, CentroAcopio detalles) {
-        return centroAcopioFactory.actualizar(id, detalles);
+        CentroAcopio actualizado = centroAcopioFactory.actualizar(id, detalles);
+        registrarAuditoriaSafe("ACTUALIZAR", "CentroAcopio", actualizado.getId(), describirCentro(actualizado));
+        return actualizado;
     }
 
     /**
@@ -179,7 +196,10 @@ public class LogisticaService {
      * @param id el identificador del centro
      */
     public void eliminarCentro(Long id) {
-        centroAcopioRepository.deleteById(id);
+        centroAcopioRepository.findById(id).ifPresent(centro -> {
+            centroAcopioRepository.delete(centro);
+            registrarAuditoriaSafe("ELIMINAR", "CentroAcopio", id, describirCentro(centro));
+        });
     }
 
     // ==================== OPERACIONES INVENTARIO ====================
@@ -190,7 +210,9 @@ public class LogisticaService {
      * @return el item creado
      */
     public Inventario crearInventario(Inventario inventario) {
-        return inventarioFactory.crear(inventario);
+        Inventario creado = inventarioFactory.crear(inventario);
+        registrarAuditoriaSafe("CREAR", "Inventario", creado.getId(), describirInventario(creado));
+        return creado;
     }
 
     /**
@@ -200,7 +222,9 @@ public class LogisticaService {
      * @return el item actualizado
      */
     public Inventario actualizarInventario(Long id, Inventario detalles) {
-        return inventarioFactory.actualizar(id, detalles);
+        Inventario actualizado = inventarioFactory.actualizar(id, detalles);
+        registrarAuditoriaSafe("ACTUALIZAR", "Inventario", actualizado.getId(), describirInventario(actualizado));
+        return actualizado;
     }
 
     /**
@@ -285,7 +309,10 @@ public class LogisticaService {
      * @param id el identificador del item
      */
     public void eliminarInventario(Long id) {
-        inventarioRepository.deleteById(id);
+        inventarioRepository.findById(id).ifPresent(inventario -> {
+            inventarioRepository.delete(inventario);
+            registrarAuditoriaSafe("ELIMINAR", "Inventario", id, describirInventario(inventario));
+        });
     }
 
     /**
@@ -327,5 +354,31 @@ public class LogisticaService {
         // En Ruta -> Disponible, Mantenimiento
         // Mantenimiento -> Disponible
         return true; // Por simplicidad, todas las transiciones son válidas ahora
+    }
+
+    private void registrarAuditoriaSafe(String accion, String tipoRecurso, Long idRecurso, String detalles) {
+        try {
+            auditoriaService.registrarAccion(accion, tipoRecurso, idRecurso, "Sistema", "Administrador", detalles);
+        } catch (RuntimeException ex) {
+            // Evita bloquear el flujo si la auditoria falla.
+        }
+    }
+
+    private String describirVehiculo(Vehiculo vehiculo) {
+        return String.format("patente=%s, modelo=%s, chofer=%s, capacidad=%s, estado=%s",
+            vehiculo.getPatente(), vehiculo.getModelo(), vehiculo.getChofer(),
+            vehiculo.getCapacidadCarga(), vehiculo.getEstado());
+    }
+
+    private String describirCentro(CentroAcopio centro) {
+        return String.format("nombre=%s, ubicacion=%s, contacto=%s, capacidadMaxima=%s",
+            centro.getNombre(), centro.getUbicacion(), centro.getContacto(), centro.getCapacidadMaxima());
+    }
+
+    private String describirInventario(Inventario inventario) {
+        String centroId = inventario.getCentroAcopio() != null ? String.valueOf(inventario.getCentroAcopio().getId()) : "";
+        String centroNombre = inventario.getCentroAcopio() != null ? inventario.getCentroAcopio().getNombre() : "";
+        return String.format("recurso=%s, cantidad=%s, unidad=%s, centroId=%s, centroNombre=%s",
+            inventario.getRecurso(), inventario.getCantidad(), inventario.getUnidadMedida(), centroId, centroNombre);
     }
 }

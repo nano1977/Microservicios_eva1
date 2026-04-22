@@ -7,6 +7,7 @@ export default function Inventario() {
   const [centros, setCentros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
@@ -37,6 +38,7 @@ export default function Inventario() {
     try {
       const response = await logisticaService.getInventario();
       setInventarios(response.data);
+      setError('');
     } catch (err) {
       setError('Error cargando inventario');
     } finally {
@@ -48,6 +50,7 @@ export default function Inventario() {
     try {
       const response = await logisticaService.getCentros();
       setCentros(response.data);
+      setError('');
     } catch (err) {
       setError('Error cargando centros');
     }
@@ -64,8 +67,13 @@ export default function Inventario() {
           id: Number(formData.centroAcopioId),
         },
       };
-      await logisticaService.crearInventario(payload);
-      setSuccess('✅ Inventario creado');
+      if (editingId) {
+        await logisticaService.actualizarInventario(editingId, payload);
+        setSuccess('✅ Inventario actualizado');
+      } else {
+        await logisticaService.crearInventario(payload);
+        setSuccess('✅ Inventario creado');
+      }
       setFormData({
         recurso: 'Alimento',
         cantidad: '',
@@ -81,11 +89,31 @@ export default function Inventario() {
         fechaVencimiento: '',
       });
       setShowForm(false);
+      setEditingId(null);
       loadInventario();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.response?.data?.mensaje || err.response?.data?.message || 'Error guardando inventario');
     }
+  };
+
+  const handleEdit = (inventario) => {
+    setFormData({
+      recurso: inventario.recurso || 'Alimento',
+      cantidad: inventario.cantidad ?? '',
+      unidadMedida: inventario.unidadMedida || 'Unidades',
+      centroAcopioId: inventario.centroAcopio?.id ? String(inventario.centroAcopio.id) : '',
+      condicion: 'Nueva',
+      publico: 'Adulto',
+      tallaNino: 'RN',
+      tipoAdulto: 'Pantalon',
+      tallaAdulto: 'M',
+      tipoAlimento: 'Perecible',
+      descripcionAlimento: '',
+      fechaVencimiento: '',
+    });
+    setEditingId(inventario.id);
+    setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -106,7 +134,26 @@ export default function Inventario() {
       <div className="crud-header">
         <h2>📊 Inventario</h2>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            setShowForm(!showForm);
+            if (showForm) {
+              setEditingId(null);
+              setFormData({
+                recurso: 'Alimento',
+                cantidad: '',
+                unidadMedida: 'Unidades',
+                centroAcopioId: '',
+                condicion: 'Nueva',
+                publico: 'Adulto',
+                tallaNino: 'RN',
+                tipoAdulto: 'Pantalon',
+                tallaAdulto: 'M',
+                tipoAlimento: 'Perecible',
+                descripcionAlimento: '',
+                fechaVencimiento: '',
+              });
+            }
+          }}
           className="btn-primary"
         >
           {showForm ? 'Cancelar' : '+ Registrar Recurso'}
@@ -118,7 +165,7 @@ export default function Inventario() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="form-card">
-          <h3>Registrar Nuevo Recurso</h3>
+          <h3>{editingId ? 'Editar Recurso' : 'Registrar Nuevo Recurso'}</h3>
 
           <div className="form-row">
             <div className="form-group">
@@ -292,7 +339,7 @@ export default function Inventario() {
           </div>
 
           <button type="submit" className="btn-primary">
-            Registrar
+            {editingId ? 'Actualizar' : 'Registrar'}
           </button>
         </form>
       )}
@@ -323,6 +370,12 @@ export default function Inventario() {
                   <td>{inv.unidadMedida}</td>
                   <td>{inv.centroAcopio?.nombre || inv.centroAcopio?.id || 'Sin centro'}</td>
                   <td>
+                    <button
+                      onClick={() => handleEdit(inv)}
+                      className="btn-small btn-edit"
+                    >
+                      ✏️ Editar
+                    </button>
                     <button
                       onClick={() => handleDelete(inv.id)}
                       className="btn-small btn-delete"
